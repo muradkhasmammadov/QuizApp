@@ -83,7 +83,8 @@ public class DAOQuestionTest {
     }
 
     @Test
-    public void testSearchQuestionsByTopic() {
+    public void testSearchQuestionsByTopic() throws SQLException {
+        daoQuestion.deleteAllQuestion();
         Question question1 = new Question();
         question1.setTopicId(new Topic(2, "Math"));
         question1.setDifficultyRank(3);

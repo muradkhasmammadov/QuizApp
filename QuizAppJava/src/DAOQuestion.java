@@ -52,6 +52,13 @@ public class DAOQuestion {
         }
     }
 
+    public void deleteAllQuestion() throws SQLException {
+        String deleteQuery = "TRUNCATE TABLE questions CASCADE;";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery)) {
+            preparedStatement.executeUpdate();
+        }
+    }
+
     public List<Question> searchQuestionsByTopic(String topic) throws SQLException {
         List<Question> questions = new ArrayList<>();
         String selectQuery = "SELECT Q.id AS question_id, Q.topic_id, Q.difficultyRank, Q.content, " +
@@ -75,7 +82,6 @@ public class DAOQuestion {
                 String content = resultSet.getString("content");
 
                 if (questionId != currentQuestionId) {
-                    // Create a new question when encountering a new question ID
                     currentQuestion = new Question(questionId, new Topic(topicId, topic), difficultyRank, content, new ArrayList<>());
                     questions.add(currentQuestion);
                     currentQuestionId = questionId;
@@ -86,7 +92,6 @@ public class DAOQuestion {
                 boolean isCorrect = resultSet.getBoolean("isCorrect");
 
                 if (responseText != null) {
-                    // Add responses to the current question
                     currentQuestion.getResponses().add(new Response(responseId, currentQuestion, responseText, isCorrect));
                 }
             }
@@ -95,7 +100,6 @@ public class DAOQuestion {
         return questions;
     }
 
-    // Implement a method to get a question by its ID
     public Question getQuestionById(int questionId) throws SQLException {
         String selectQuery = "SELECT topic_id, difficultyRank, content FROM Questions WHERE id=?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
@@ -108,6 +112,6 @@ public class DAOQuestion {
                 return new Question(questionId, new Topic(topicId, ""), difficultyRank, content, new ArrayList<>());
             }
         }
-        return null; // Return null if the question with the given ID is not found
+        return null;
     }
 }
